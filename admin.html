@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — Zoyeria Jewels</title>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    :root{--dark:#1a1a1a;--gold:#b8972e;--cream:#faf8f5;--mid:#6b6b6b;--border:#e8e2d9;--red:#c0392b;--green:#1a7a3a}
+    body{font-family:'Jost',sans-serif;background:#f4f4f4;color:var(--dark)}
+
+    /* Login Screen */
+    #loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--dark)}
+    .login-box{background:#fff;padding:48px 40px;width:360px;animation:fadeUp .3s ease}
+    .login-box h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:400;margin-bottom:4px}
+    .login-box p{font-size:.78rem;color:var(--mid);letter-spacing:1px;margin-bottom:28px}
+    .login-box input{display:block;width:100%;border:none;border-bottom:1px solid var(--border);padding:10px 0;font-family:'Jost',sans-serif;font-size:.9rem;margin-bottom:18px;outline:none;background:transparent}
+    .login-box input:focus{border-bottom-color:var(--dark)}
+    .btn-login{width:100%;background:var(--dark);color:#fff;border:none;padding:13px;font-family:'Jost',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .btn-login:hover{background:#333}
+    #loginErr{color:var(--red);font-size:.82rem;text-align:center;margin-top:12px;min-height:18px}
+
+    /* Admin Layout */
+    #adminApp{display:none;min-height:100vh}
+    .sidebar{position:fixed;top:0;left:0;width:220px;height:100%;background:var(--dark);color:#fff;display:flex;flex-direction:column;z-index:10}
+    .sidebar-logo{padding:28px 24px 20px;font-family:'Cormorant Garamond',serif;font-size:1.2rem;letter-spacing:3px;border-bottom:1px solid #333}
+    .sidebar-logo span{display:block;font-family:'Jost',sans-serif;font-size:.68rem;letter-spacing:2px;color:#aaa;margin-top:3px}
+    .sidebar nav{flex:1;padding:16px 0}
+    .sidebar nav a{display:flex;align-items:center;gap:10px;padding:12px 24px;color:#ccc;text-decoration:none;font-size:.82rem;letter-spacing:1.5px;text-transform:uppercase;transition:background .15s,color .15s;cursor:pointer}
+    .sidebar nav a:hover,.sidebar nav a.active{background:#2a2a2a;color:#fff}
+    .sidebar nav a svg{flex-shrink:0;opacity:.7}
+    .sidebar-foot{padding:20px 24px;border-top:1px solid #333}
+    .sidebar-foot button{background:none;border:1px solid #555;color:#aaa;padding:8px 16px;font-size:.75rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;width:100%;transition:border-color .2s,color .2s}
+    .sidebar-foot button:hover{border-color:#fff;color:#fff}
+
+    .main{margin-left:220px;padding:36px 36px;min-height:100vh}
+    .page{display:none}
+    .page.active{display:block}
+
+    .page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:400;margin-bottom:6px}
+    .page-sub{font-size:.8rem;color:var(--mid);letter-spacing:1px;margin-bottom:28px}
+
+    /* Stats */
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:20px;margin-bottom:36px}
+    .stat-card{background:#fff;padding:24px 20px;border-left:3px solid var(--gold)}
+    .stat-card h4{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--mid);margin-bottom:8px}
+    .stat-card p{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:500}
+
+    /* Table */
+    .table-wrap{background:#fff;overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:.85rem}
+    thead tr{background:var(--dark);color:#fff}
+    th{padding:12px 16px;text-align:left;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;font-weight:400}
+    td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+    tr:hover td{background:#faf8f5}
+    td img{width:44px;height:52px;object-fit:cover;background:#f0ebe3}
+    .badge{display:inline-block;padding:3px 10px;font-size:.68rem;letter-spacing:1px;text-transform:uppercase;border-radius:2px}
+    .badge.active{background:#d4edda;color:var(--green)}
+    .badge.inactive{background:#f8d7da;color:var(--red)}
+    .badge.pending{background:#fff3cd;color:#856404}
+
+    /* Buttons */
+    .btn-sm{padding:6px 14px;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;border:none;cursor:pointer;transition:opacity .2s;font-family:'Jost',sans-serif}
+    .btn-sm:hover{opacity:.8}
+    .btn-edit{background:var(--dark);color:#fff}
+    .btn-del{background:var(--red);color:#fff}
+    .btn-toggle{background:#555;color:#fff}
+
+    /* Add/Edit Form */
+    .form-card{background:#fff;padding:32px;max-width:680px;margin-bottom:32px}
+    .form-card h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .form-group{display:flex;flex-direction:column;gap:6px}
+    .form-group.full{grid-column:1/-1}
+    .form-group label{font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--mid)}
+    .form-group input,.form-group select,.form-group textarea{border:1px solid var(--border);padding:9px 12px;font-family:'Jost',sans-serif;font-size:.88rem;color:var(--dark);outline:none;transition:border-color .2s;background:#fff}
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--dark)}
+    .form-group textarea{resize:vertical;min-height:80px}
+    .img-preview{width:90px;height:108px;object-fit:cover;display:none;margin-top:8px;border:1px solid var(--border)}
+    .form-actions{display:flex;gap:12px;margin-top:20px;grid-column:1/-1}
+    .btn-primary{background:var(--dark);color:#fff;border:none;padding:12px 28px;font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:background .2s}
+    .btn-primary:hover{background:#333}
+    .btn-secondary{background:transparent;color:var(--dark);border:1px solid var(--border);padding:12px 20px;font-family:'Jost',sans-serif;font-size:.78rem;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:border-color .2s}
+    .btn-secondary:hover{border-color:var(--dark)}
+    .msg{padding:10px 16px;font-size:.82rem;margin-bottom:16px;display:none}
+    .msg.success{background:#d4edda;color:var(--green)}
+    .msg.error{background:#f8d7da;color:var(--red)}
+
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @media(max-width:768px){.sidebar{width:100%;height:auto;position:relative}.main{margin-left:0;padding:20px}.form-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>Admin Panel</h2>
+    <p>ZOYERIA JEWELS</p>
+    <input type="email" id="aEmail" placeholder="admin@gmail.com" value="admin@gmail.com"/>
+    <input type="password" id="aPass" placeholder="Password" value="admin"/>
+    <button class="btn-login" onclick="adminLogin()">Login</button>
+    <p id="loginErr"></p>
+  </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="adminApp">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      Zoyeria
+      <span>Admin Panel</span>
+    </div>
+    <nav>
+      <a onclick="showPage('dashboard')" class="active" id="nav-dashboard">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a onclick="showPage('products')" id="nav-products">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/></svg>
+        Products
+      </a>
+      <a onclick="showPage('inquiries')" id="nav-inquiries">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Inquiries
+      </a>
+      <a onclick="showPage('users')" id="nav-users">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Users
+      </a>
+    </nav>
+    <div class="sidebar-foot">
+      <button onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main">
+
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <p class="page-title">Dashboard</p>
+      <p class="page-sub">Welcome back, Admin</p>
+      <div class="stats" id="statsGrid"></div>
+    </div>
+
+    <!-- Products -->
+    <div class="page" id="page-products">
+      <p class="page-title">Products</p>
+      <p class="page-sub">Add, edit or remove jewellery items</p>
+
+      <!-- Add / Edit Form -->
+      <div class="form-card">
+        <h3 id="formTitle">Add New Product</h3>
+        <p id="formMsg" class="msg"></p>
+        <div class="form-grid">
+          <input type="hidden" id="editId"/>
+          <div class="form-group">
+            <label>Product Name *</label>
+            <input type="text" id="fName" placeholder="e.g. Gold Necklace Set"/>
+          </div>
+          <div class="form-group">
+            <label>Meta / Category</label>
+            <input type="text" id="fMeta" placeholder="22K Gold · Bridal Collection"/>
+          </div>
+          <div class="form-group full">
+            <label>Description</label>
+            <textarea id="fDesc" placeholder="Short product description..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Badge</label>
+            <select id="fBadge">
+              <option value="">None</option>
+              <option value="New">New</option>
+              <option value="Bestseller">Bestseller</option>
+              <option value="Limited">Limited</option>
+              <option value="Sale">Sale</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price (₹) — optional</label>
+            <input type="number" id="fPrice" placeholder="Leave blank to hide price"/>
+          </div>
+          <div class="form-group full">
+            <label>Product Image</label>
+            <input type="file" id="fImage" accept="image/*" onchange="previewImg(this)"/>
+            <img id="imgPreview" class="img-preview"/>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="saveProduct()">Save Product</button>
+            <button class="btn-secondary" onclick="resetForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Badge</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="productsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Inquiries -->
+    <div class="page" id="page-inquiries">
+      <p class="page-title">Inquiries</p>
+      <p class="page-sub">Customer product inquiries</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Product</th><th>User ID</th><th>Phone</th><th>Status</th><th>Date</th></tr></thead>
+          <tbody id="inquiriesTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="page" id="page-users">
+      <p class="page-title">Users</p>
+      <p class="page-sub">Registered customers</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const API = '/zoyeria-jewels/api';
+let adminToken = localStorage.getItem('admin_token') || '';
+
+// ── Auto-restore session ─────────────────────────────────────────
+if (adminToken) showAdminApp();
+
+// ── Login ────────────────────────────────────────────────────────
+async function adminLogin() {
+  const email = document.getElementById('aEmail').value.trim();
+  const pass  = document.getElementById('aPass').value;
+  document.getElementById('loginErr').textContent = '';
+
+  try {
+    const res  = await fetch(`${API}/login.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.user?.isAdmin)
+      return document.getElementById('loginErr').textContent = data.error || 'Not an admin account';
+
+    adminToken = data.token;
+    localStorage.setItem('admin_token', adminToken);
+    showAdminApp();
+  } catch {
+    document.getElementById('loginErr').textContent = 'Cannot connect to server';
+  }
+}
+
+function showAdminApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  loadDashboard();
+}
+
+function adminLogout() {
+  localStorage.removeItem('admin_token');
+  adminToken = '';
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function authHeaders() {
+  return { 'Authorization': `Bearer ${adminToken}` };
+}
+
+// ── Pages ────────────────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-'  + name).classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'products')  loadProducts();
+  if (name === 'inquiries') loadInquiries();
+  if (name === 'users')     loadUsers();
+}
+
+// ── Dashboard ────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    const [prods, inqs, users] = await Promise.all([
+      fetch(`${API}/admin/products.php`,  { headers: authHeaders() }).then(r => r.json()),
+      fetch(`${API}/admin/inquiries.php`, { headers: authHeaders() }).then(r => r.json()),
+      fetch(`${API}/admin/users.php`,     { headers: authHeaders() }).then(r => r.json()),
+    ]);
+    document.getElementById('statsGrid').innerHTML = `
+      <div class="stat-card"><h4>Total Products</h4><p>${prods.length}</p></div>
+      <div class="stat-card"><h4>Active Products</h4><p>${prods.filter(p => p.is_active).length}</p></div>
+      <div class="stat-card"><h4>Inquiries</h4><p>${inqs.length}</p></div>
+      <div class="stat-card"><h4>Registered Users</h4><p>${users.length}</p></div>
+    `;
+  } catch { }
+}
+
+// ── Products ─────────────────────────────────────────────────────
+async function loadProducts() {
+  const res  = await fetch(`${API}/admin/products.php`, { headers: authHeaders() });
+  const data = await res.json();
+  const tbody = document.getElementById('productsTbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px">No products yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(p => `
+    <tr>
+      <td><img src="${p.image_url || 'https://via.placeholder.com/44x52?text=No+Img'}" onerror="this.src='https://via.placeholder.com/44x52?text=No+Img'"/></td>
+      <td><strong>${p.name}</strong>${p.price ? `<br><small style="color:var(--mid)">₹${Number(p.price).toLocaleString('en-IN')}</small>` : ''}</td>
+      <td style="color:var(--mid);font-size:.8rem">${p.meta || '—'}</td>
+      <td>${p.badge ? `<span class="badge active">${p.badge}</span>` : '—'}</td>
+      <td><span class="badge ${p.is_active ? 'active' : 'inactive'}">${p.is_active ? 'Active' : 'Hidden'}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-sm btn-edit" onclick='editProduct(${JSON.stringify(p)})'>Edit</button>
+        <button class="btn-sm btn-toggle" onclick="toggleProduct(${p.id},${p.is_active})">${p.is_active ? 'Hide' : 'Show'}</button>
+        <button class="btn-sm btn-del" onclick="deleteProduct(${p.id})">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function previewImg(input) {
+  const prev = document.getElementById('imgPreview');
+  if (input.files && input.files[0]) {
+    prev.src = URL.createObjectURL(input.files[0]);
+    prev.style.display = 'block';
+  }
+}
+
+function resetForm() {
+  document.getElementById('formTitle').textContent = 'Add New Product';
+  document.getElementById('editId').value = '';
+  ['fName','fDesc','fMeta','fPrice'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fBadge').value = '';
+  document.getElementById('fImage').value = '';
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('formMsg').style.display = 'none';
+}
+
+function editProduct(p) {
+  document.getElementById('formTitle').textContent = 'Edit Product';
+  document.getElementById('editId').value  = p.id;
+  document.getElementById('fName').value   = p.name  || '';
+  document.getElementById('fDesc').value   = p.description || '';
+  document.getElementById('fMeta').value   = p.meta  || '';
+  document.getElementById('fBadge').value  = p.badge || '';
+  document.getElementById('fPrice').value  = p.price || '';
+  const prev = document.getElementById('imgPreview');
+  if (p.image_url) { prev.src = p.image_url; prev.style.display = 'block'; }
+  // Scroll to form
+  document.getElementById('formTitle').scrollIntoView({ behavior: 'smooth' });
+}
+
+async function saveProduct() {
+  const id   = document.getElementById('editId').value;
+  const name = document.getElementById('fName').value.trim();
+  const msgEl = document.getElementById('formMsg');
+  if (!name) { showFormMsg('Product name is required', 'error'); return; }
+
+  const formData = new FormData();
+  formData.append('name',        name);
+  formData.append('description', document.getElementById('fDesc').value);
+  formData.append('meta',        document.getElementById('fMeta').value);
+  formData.append('badge',       document.getElementById('fBadge').value);
+  formData.append('price',       document.getElementById('fPrice').value);
+  const imgFile = document.getElementById('fImage').files[0];
+  if (imgFile) formData.append('image', imgFile);
+
+  const url    = id ? `${API}/admin/products.php?id=${id}` : `${API}/admin/products.php`;
+  const method = 'POST';
+
+  try {
+    const res  = await fetch(url, { method, headers: authHeaders(), body: formData });
+    const data = await res.json();
+    if (!res.ok) return showFormMsg(data.error || 'Failed', 'error');
+    showFormMsg(id ? 'Product updated!' : 'Product added!', 'success');
+    resetForm();
+    loadProducts();
+  } catch {
+    showFormMsg('Cannot connect to server', 'error');
+  }
+}
+
+function showFormMsg(text, type) {
+  const el = document.getElementById('formMsg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 3000);
+}
+
+async function toggleProduct(id, currentStatus) {
+  const newStatus = currentStatus ? 0 : 1;
+  const formData = new FormData();
+  formData.append('is_active', newStatus);
+  await fetch(`${API}/admin/products.php?id=${id}`, { method:'POST', headers: authHeaders(), body: formData });
+  loadProducts();
+}
+
+async function deleteProduct(id) {
+  if (!confirm('Delete this product permanently?')) return;
+  await fetch(`${API}/admin/products.php?id=${id}`, { method:'DELETE', headers: authHeaders() });
+  loadProducts();
+}
+
+// ── Inquiries ────────────────────────────────────────────────────
+async function loadInquiries() {
+  const res  = await fetch(`${API}/admin/inquiries.php`, { headers: authHeaders() });
+  const data = await res.json();
+  const tbody = document.getElementById('inquiriesTbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:30px">No inquiries yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(i => `
+    <tr>
+      <td><strong>${i.product_name}</strong></td>
+      <td>${i.user_id || 'Guest'}</td>
+      <td>${i.phone || '—'}</td>
+      <td><span class="badge pending">${i.status}</span></td>
+      <td style="color:var(--mid);font-size:.8rem">${new Date(i.created_at).toLocaleDateString('en-IN')}</td>
+    </tr>
+  `).join('');
+}
+
+// ── Users ────────────────────────────────────────────────────────
+async function loadUsers() {
+  const res  = await fetch(`${API}/admin/users.php`, { headers: authHeaders() });
+  const data = await res.json();
+  const tbody = document.getElementById('usersTbody');
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;padding:30px">No users yet</td></tr>'; return; }
+  tbody.innerHTML = data.map(u => `
+    <tr>
+      <td style="color:var(--mid)">${u.id}</td>
+      <td><strong>${u.name}</strong></td>
+      <td>${u.email}</td>
+      <td>${u.phone || '—'}</td>
+      <td style="color:var(--mid);font-size:.8rem">${new Date(u.created_at).toLocaleDateString('en-IN')}</td>
+    </tr>
+  `).join('');
+}
+
+// Enter key on login
+document.getElementById('aPass').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Zoyeria Jewels</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- Announcement Bar -->
+<div class="announcement">Free shipping on orders above ₹5000 &nbsp;|&nbsp; WhatsApp Inquiry: 9016645235</div>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <nav class="nav-left">
+      <a href="#collections">Collections</a>
+      <a href="#about">About</a>
+    </nav>
+    <a href="#" class="logo">ZOYERIA JEWELS</a>
+    <div class="nav-right">
+      <a href="#contact" class="hide-mobile">Contact</a>
+
+      <!-- Search -->
+      <button class="icon-btn" onclick="toggleSearch()" aria-label="Search">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+
+      <!-- Login / User -->
+      <button class="icon-btn" onclick="toggleAuthModal()" id="loginBtn" aria-label="Account">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+      <span id="userGreet" class="user-greet" style="display:none"></span>
+
+      <!-- Cart -->
+      <button class="cart-icon icon-btn" onclick="toggleCart()" aria-label="Cart">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+
+      <!-- 3-dot menu -->
+      <div class="dots-wrap">
+        <button class="icon-btn" onclick="toggleDotsMenu()" aria-label="More">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+          </svg>
+        </button>
+        <div class="dots-menu" id="dotsMenu">
+          <a href="#collections">Collections</a>
+          <a href="#about">About Us</a>
+          <a href="#contact">Contact</a>
+          <div class="dots-divider"></div>
+          <a href="https://wa.me/919016645235" target="_blank">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366" style="vertical-align:middle;margin-right:6px"><path d="M20.52 3.48A11.93 11.93 0 0012.01 0C5.38 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.19-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52zm-8.51 18.4a9.93 9.93 0 01-5.08-1.39l-.36-.22-3.68.97.98-3.59-.24-.37a9.93 9.93 0 01-1.52-5.3C2.11 6.48 6.49 2.1 12.01 2.1c2.65 0 5.14 1.03 7.02 2.91a9.87 9.87 0 012.9 7.01c0 5.52-4.39 9.86-9.92 9.86zm5.46-7.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.91-2.19-.24-.57-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.5 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.73 2.02-1.43.25-.7.25-1.3.17-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+            WhatsApp Us
+          </a>
+          <div class="dots-divider"></div>
+          <a href="#" onclick="toggleAuthModal();return false;" id="dotsLoginLink">Login / Register</a>
+          <a href="#" onclick="logout();return false;" id="dotsLogout" style="display:none;color:#c00">Logout</a>
+          <div class="dots-divider"></div>
+          <a href="admin.html" id="dotsAdmin" style="display:none;color:var(--gold)">Admin Panel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Bar (expandable) -->
+  <div class="search-bar" id="searchBar">
+    <div class="search-inner">
+      <svg width="18" height="18" fill="none" stroke="#999" stroke-width="1.6" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" placeholder="Search jewellery..." oninput="searchProducts(this.value)" autocomplete="off"/>
+      <button onclick="toggleSearch()" style="background:none;border:none;cursor:pointer;color:#999;font-size:1.1rem">✕</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-text">
+    <p class="hero-sub">New Collection 2026</p>
+    <h1>Crafted for<br/>Those Who Shine</h1>
+    <a href="#collections" class="btn-outline">Explore Collection</a>
+  </div>
+</section>
+
+<!-- Collections Label -->
+<section class="section-label" id="collections">
+  <p class="label-top">Handcrafted with Purity</p>
+  <h2>Our Collections</h2>
+</section>
+
+<!-- Products Grid -->
+<section class="products">
+  <div class="product-grid" id="productGrid"></div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <p class="label-top">Our Story</p>
+    <h2>Generations of Craft</h2>
+    <p class="about-text">At Zoyeria Jewels, every piece is handcrafted with care using the finest gold, diamonds, and silver. We believe jewellery is not just an accessory — it carries memories, love, and legacy.</p>
+    <a href="https://wa.me/919016645235?text=Hello%2C%20I%20want%20to%20know%20more%20about%20Zoyeria%20Jewels" class="btn-dark" target="_blank">Chat with Us</a>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer id="contact">
+  <p class="logo" style="font-size:1.4rem">ZOYERIA JEWELS</p>
+  <p>📞 9016645235 &nbsp;|&nbsp; WhatsApp Inquiry Available</p>
+  <p style="margin-top:8px;opacity:.6;font-size:.85rem">© 2026 Zoyeria Jewels. All rights reserved.</p>
+</footer>
+
+<!-- Auth Modal -->
+<div class="modal-overlay" id="authModal" onclick="closeModalOnOverlay(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="toggleAuthModal()">✕</button>
+    <h3 id="authTitle">Login</h3>
+    <p id="authSubtitle" class="modal-subtitle">Welcome back to Zoyeria Jewels</p>
+
+    <!-- Login Form -->
+    <form id="loginForm" class="auth-form">
+      <input type="email" id="loginEmail" placeholder="Email" required autocomplete="email"/>
+      <input type="password" id="loginPass" placeholder="Password" required autocomplete="current-password"/>
+      <button type="submit" class="btn-submit">Login</button>
+      <p class="form-switch">New here? <a href="#" onclick="switchToRegister();return false;">Create account</a></p>
+    </form>
+
+    <!-- Register Form -->
+    <form id="registerForm" class="auth-form" style="display:none">
+      <input type="text" id="regName" placeholder="Full Name" required autocomplete="name"/>
+      <input type="email" id="regEmail" placeholder="Email" required autocomplete="email"/>
+      <input type="password" id="regPass" placeholder="Password" required autocomplete="new-password"/>
+      <button type="submit" class="btn-submit">Register</button>
+      <p class="form-switch">Already have account? <a href="#" onclick="switchToLogin();return false;">Login</a></p>
+    </form>
+
+    <p id="authMsg" class="auth-msg"></p>
+  </div>
+</div>
+
+<!-- Cart Drawer -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>Your Cart</h3>
+    <button onclick="toggleCart()" class="close-btn">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"><p class="empty-cart">Your cart is empty.</p></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <a class="wa-inquire-btn" id="waCartBtn" href="#" target="_blank">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20.52 3.48A11.93 11.93 0 0012.01 0C5.38 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.19-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52zm-8.51 18.4a9.93 9.93 0 01-5.08-1.39l-.36-.22-3.68.97.98-3.59-.24-.37a9.93 9.93 0 01-1.52-5.3C2.11 6.48 6.49 2.1 12.01 2.1c2.65 0 5.14 1.03 7.02 2.91a9.87 9.87 0 012.9 7.01c0 5.52-4.39 9.86-9.92 9.86zm5.46-7.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.91-2.19-.24-.57-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.5 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.73 2.02-1.43.25-.7.25-1.3.17-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+      Inquire on WhatsApp
+    </a>
+  </div>
+</div>
+
+<!-- Fixed WhatsApp Button -->
+<a class="wa-fixed" href="https://wa.me/919016645235?text=Hello%2C%20I%20want%20to%20inquire%20about%20your%20jewellery%20collection." target="_blank" aria-label="WhatsApp">
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M20.52 3.48A11.93 11.93 0 0012.01 0C5.38 0 0 5.37 0 12c0 2.11.55 4.16 1.6 5.97L0 24l6.19-1.62A11.94 11.94 0 0012 24c6.63 0 12-5.37 12-12 0-3.2-1.25-6.22-3.48-8.52zm-8.51 18.4a9.93 9.93 0 01-5.08-1.39l-.36-.22-3.68.97.98-3.59-.24-.37a9.93 9.93 0 01-1.52-5.3C2.11 6.48 6.49 2.1 12.01 2.1c2.65 0 5.14 1.03 7.02 2.91a9.87 9.87 0 012.9 7.01c0 5.52-4.39 9.86-9.92 9.86zm5.46-7.4c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.91-2.19-.24-.57-.49-.5-.67-.5h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.01-1.04 2.46s1.06 2.85 1.21 3.05c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.5 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.73 2.02-1.43.25-.7.25-1.3.17-1.43-.07-.13-.27-.2-.57-.35z"/></svg>
+  <span>Inquire</span>
+</a>
+
+<script src="app.js"></script>
+</body>
+</html>
